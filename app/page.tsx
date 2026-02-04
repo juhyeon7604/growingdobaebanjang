@@ -179,6 +179,15 @@ export default function Page() {
                   <div className="mt-1 text-lg font-semibold">상점 가기</div>
                   <p className="mt-2 text-sm text-slate-300">장비와 아이템을 구매해.</p>
                 </Link>
+
+                <Link
+                  href="/information"
+                  className="rounded-2xl border border-slate-800 bg-slate-950/40 p-5 hover:border-slate-600"
+                >
+                  <div className="text-sm text-red-600">5</div>
+                  <div className="mt-1 text-lg font-extrabold text-red-600">게임 설명서</div>
+                  <p className="mt-2 text-sm font-semibold text-red-600">꼭 게임 규칙 확인하이소.</p>
+                </Link>
               </div>
             </div>
           ) : (
