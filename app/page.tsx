@@ -73,36 +73,6 @@ export default function Page() {
     router.push("/login");
   };
 
-  const handleResetMoney = () => {
-    if (!userId) return;
-    const storageKey = getUserStorageKey(userId) || DEFAULT_STORAGE_KEY;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { money?: number; owned?: OwnedCharacter[] };
-      const next = { ...parsed, money: 0 };
-      localStorage.setItem(storageKey, JSON.stringify(next));
-      setMoney(0);
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleAddTestMoney = () => {
-    if (!userId) return;
-    const storageKey = getUserStorageKey(userId) || DEFAULT_STORAGE_KEY;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { money?: number; owned?: OwnedCharacter[] };
-      const nextMoney = (typeof parsed.money === "number" ? parsed.money : 0) + 10_000_000;
-      const next = { ...parsed, money: nextMoney };
-      localStorage.setItem(storageKey, JSON.stringify(next));
-      setMoney(nextMoney);
-    } catch {
-      // ignore
-    }
-  };
 
   const baseWorkPower = owned.reduce((acc, cur) => acc + (Number(cur.workPower) || 0), 0);
   const weapon = weaponRows.find((row) => row.weaponname === equippedWeapon);
@@ -156,23 +126,6 @@ export default function Page() {
                 </div>
                 <div className="mt-1 text-sm text-slate-700">
                   총 합계 작업력: <span className="font-semibold text-slate-100">{totalWorkPower.toLocaleString("ko-KR")}</span>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={handleAddTestMoney}
-                    className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
-                  >
-                    +1,000만원
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleResetMoney}
-                    className="rounded-xl bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-700"
-                  >
-                    돈 초기화
-                  </button>
                 </div>
 
                 {owned.length > 0 && (
