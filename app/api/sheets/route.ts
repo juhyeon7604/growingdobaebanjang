@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const SHEET_API_URL =
-  "https://script.google.com/macros/s/AKfycbzt8HEfRTlpIpYVkoXkIGQXKMKDuVGELuU3mEsxbyLXhvQGHSvA1VVRrE5Uu75CVPaZ/exec";
+  "https://script.google.com/macros/s/AKfycbyRMdWsGJxctsdoDgWEdKN44bAPEHji7rkv-FpLmZHuMbuBX5z6jCZmjrRVloEIRk_S/exec";
 
 export async function GET() {
   const response = await fetch(SHEET_API_URL, { cache: "no-store" });

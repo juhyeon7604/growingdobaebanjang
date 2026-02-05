@@ -321,7 +321,7 @@ export default function GachaPage() {
               </div>
             ) : (
               <div className="mt-2 text-slate-300">
-                아직 뽑은 결과가 없어. 테스트 돈으로 뽑아봐!
+                아직 뽑은 결과가 없어. 뽑아
               </div>
             )}
           </div>
@@ -338,8 +338,15 @@ export default function GachaPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {odds.map((c) => (
-                    <tr key={c.id} className="border-t border-slate-800">
+                  {odds.map((c, idx) => (
+                    <tr
+                      key={c.id}
+                      className={`border-t border-slate-800 ${
+                        idx % 2 === 0
+                          ? 'bg-slate-200/40 dark:bg-slate-800/40'
+                          : 'bg-slate-200/30 dark:bg-slate-800/30'
+                      }`}
+                    >
                       <td className="px-3 py-2">{c.name}</td>
                       <td className="px-3 py-2">
                         <span

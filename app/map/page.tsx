@@ -66,38 +66,48 @@ export default function MapPage() {
           </div>
 
           <div className="mt-6">
-            <div className="relative mx-auto w-full max-w-[720px]">
-              <img
-                src="/map.png"
-                alt="서울 지도"
-                className="w-full rounded-xl border border-slate-800 bg-white"
-              />
-              {isLoading && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-black/20 text-sm text-slate-100">
-                  로딩 중...
-                </div>
-              )}
-              {districtList.map((d) => (
-                <button
-                  key={d}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-[10px] text-white shadow-sm ${
-                    isLoading ? "pointer-events-none opacity-60" : ""
-                  }`}
-                  style={{
-                    ...getDistrictPosition(d),
-                    backgroundColor: getAreaColor(d),
-                  }}
-                  disabled={isLoading}
-                  onClick={() => {
-                    if (typeof document !== "undefined" && document.documentElement.requestFullscreen) {
-                      document.documentElement.requestFullscreen().catch(() => {});
-                    }
-                    router.push(`/map/${encodeURIComponent(d)}`);
-                  }}
-                >
-                  {d}
-                </button>
-              ))}
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,720px)_1fr]">
+              <div className="relative mx-auto w-full max-w-[720px]">
+                <img
+                  src="/map.png"
+                  alt="서울 지도"
+                  className="w-full rounded-xl border border-slate-800 bg-white"
+                />
+                {isLoading && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-black/20 text-sm text-slate-100">
+                    로딩 중...
+                  </div>
+                )}
+                {districtList.map((d) => (
+                  <button
+                    key={d}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-[10px] text-white shadow-sm ${
+                      isLoading ? "pointer-events-none opacity-60" : ""
+                    }`}
+                    style={{
+                      ...getDistrictPosition(d),
+                      backgroundColor: getAreaColor(d),
+                    }}
+                    disabled={isLoading}
+                    onClick={() => {
+                      if (typeof document !== "undefined" && document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                      }
+                      router.push(`/map/${encodeURIComponent(d)}`);
+                    }}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-center">
+                <img
+                  src="/keyboard.png"
+                  alt="키보드 안내"
+                  className="w-full max-w-[48rem] rounded-xl border border-slate-800 bg-slate-950/40 p-4 object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>

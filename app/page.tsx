@@ -87,9 +87,7 @@ export default function Page() {
             <div>
               <div className="text-xs text-slate-400">도배 반장 성장 게임</div>
               <h1 className="text-2xl font-extrabold">도배반장 키우기</h1>
-              <p className="mt-1 text-sm text-slate-300">
-                로그인 후 원하는 메뉴를 선택해.
-              </p>
+
             </div>
             <button
               type="button"
@@ -150,7 +148,7 @@ export default function Page() {
                 >
                   <div className="text-sm text-slate-400">1</div>
                   <div className="mt-1 text-lg font-semibold">반장 뽑기</div>
-                  <p className="mt-2 text-sm text-slate-300">반장을 뽑아 작업력을 올려.</p>
+                  <p className="mt-2 text-sm text-slate-300">반장을 뽑아 작업력 올리기</p>
                 </Link>
 
                 <Link
@@ -168,7 +166,7 @@ export default function Page() {
                 >
                   <div className="text-sm text-slate-400">3</div>
                   <div className="mt-1 text-lg font-semibold">작업하러 가기</div>
-                  <p className="mt-2 text-sm text-slate-300">현장 맵으로 이동해.</p>
+                  <p className="mt-2 text-sm text-slate-300">작업하러 가볼까~.</p>
                 </Link>
 
                 <Link
@@ -177,14 +175,32 @@ export default function Page() {
                 >
                   <div className="text-sm text-slate-400">4</div>
                   <div className="mt-1 text-lg font-semibold">상점 가기</div>
-                  <p className="mt-2 text-sm text-slate-300">장비와 아이템을 구매해.</p>
+                  <p className="mt-2 text-sm text-slate-300">돈 없으면 들어오지마~</p>
+                </Link>
+
+                <Link
+                  href="/ranking"
+                  className="rounded-2xl border border-slate-800 bg-slate-950/40 p-5 hover:border-slate-600"
+                >
+                  <div className="text-sm text-slate-400">5</div>
+                  <div className="mt-1 text-lg font-semibold">랭킹</div>
+                  <p className="mt-2 text-sm text-slate-300">누가누가 잘하나~ ㅋㅋ</p>
+                </Link>
+
+                <Link
+                  href="/board"
+                  className="rounded-2xl border border-slate-800 bg-slate-950/40 p-5 hover:border-slate-600"
+                >
+                  <div className="text-sm text-slate-400">6</div>
+                  <div className="mt-1 text-lg font-semibold">자유게시판</div>
+                  <p className="mt-2 text-sm text-slate-300">추가 됐으면 하는 기능이나 의견 그리고 자유롭게 소통하는 곳</p>
                 </Link>
 
                 <Link
                   href="/information"
                   className="rounded-2xl border border-slate-800 bg-slate-950/40 p-5 hover:border-slate-600"
                 >
-                  <div className="text-sm text-red-600">5</div>
+                  <div className="text-sm text-red-600">7</div>
                   <div className="mt-1 text-lg font-extrabold text-red-600">게임 설명서</div>
                   <p className="mt-2 text-sm font-semibold text-red-600">꼭 게임 규칙 확인하이소.</p>
                 </Link>

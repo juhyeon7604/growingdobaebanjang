@@ -169,6 +169,11 @@ function WorkContent() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Backspace") {
+        event.preventDefault();
+        router.push(`/map/${encodeURIComponent(place)}`);
+        return;
+      }
       if (event.code !== "Space") return;
       event.preventDefault();
       if (isWorking || isDone || !weaponReady) return;
@@ -177,7 +182,7 @@ function WorkContent() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleStartWork, isDone, isWorking, weaponReady]);
+  }, [handleStartWork, isDone, isWorking, place, router, weaponReady]);
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
@@ -185,7 +190,7 @@ function WorkContent() {
         <div className="rounded-2xl bg-slate-900 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-extrabold">🧰 작업 진행</h1>
+              <h1 className="text-2xl font-extrabold"> 작업 진행</h1>
               <p className="mt-2 text-sm text-slate-300">
                 {place} · 작업량 {adjustedWork.toLocaleString("ko-KR")}
               </p>
@@ -298,6 +303,14 @@ function WorkContent() {
             <div className="text-slate-400">
               인건비: <span className="font-semibold text-emerald-300">{laborPay.toLocaleString("ko-KR")}</span>
             </div>
+          </div>
+
+          <div className="mt-6 flex items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+            <img
+              src="/keyboard.png"
+              alt="키보드 안내"
+              className="w-full max-w-[48rem] rounded-xl object-contain"
+            />
           </div>
         </div>
       </div>

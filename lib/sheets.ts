@@ -27,6 +27,19 @@ export type WorkerRow = {
   probability?: number;
 };
 
+export type SaveRow = {
+  id: string;
+  money: number;
+  weapon: string;
+  worker: string;
+};
+
+export type BoardRow = {
+  nickname: string;
+  memo: string;
+  createdAt: string;
+};
+
 export type OwnedCharacter = {
   uid: string;
   defId: string;
@@ -53,6 +66,8 @@ export type SheetData = {
   weapon: WeaponRow[];
   area: AreaRow[];
   worker: WorkerRow[];
+  save?: SaveRow[];
+  board?: BoardRow[];
 };
 
 type LoginResponse = {
@@ -60,6 +75,11 @@ type LoginResponse = {
   message?: string;
   user?: { id: string; nickname: string };
   save?: { money?: number; weapon?: string; worker?: OwnedCharacter[] | string };
+};
+
+type RegisterResponse = {
+  ok?: boolean;
+  message?: string;
 };
 
 const toNumber = (value: unknown) => {
@@ -113,6 +133,25 @@ export async function fetchSheetData(): Promise<SheetData> {
           probability: toNumber(row.probability),
         }))
       : [],
+    save: Array.isArray((raw as { save?: unknown }).save)
+      ? (raw as { save?: Array<{ id?: unknown; money?: unknown; weapon?: unknown; worker?: unknown }> }).save!.map(
+          (row) => ({
+            id: toText(row.id),
+            money: toNumber(row.money),
+            weapon: toText(row.weapon),
+            worker: toText(row.worker),
+          })
+        )
+      : undefined,
+    board: Array.isArray((raw as { board?: unknown }).board)
+      ? (raw as { board?: Array<{ nickname?: unknown; memo?: unknown; createdAt?: unknown }> }).board!.map(
+          (row) => ({
+            nickname: toText(row.nickname),
+            memo: toText(row.memo),
+            createdAt: toText(row.createdAt),
+          })
+        )
+      : undefined,
   };
 }
 
@@ -227,4 +266,34 @@ export async function saveUserData(id: string, save: SaveData) {
 
   const data = (await response.json()) as { ok?: boolean };
   return Boolean(data.ok);
+}
+
+export async function registerWithSheet(id: string, password: string, nickname: string) {
+  const response = await fetch(SHEET_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "register", id, password, nickname }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Register failed");
+  }
+
+  const data = (await response.json()) as RegisterResponse;
+  return { ok: Boolean(data.ok), message: data.message } as const;
+}
+
+export async function addBoardPost(nickname: string, memo: string) {
+  const response = await fetch(SHEET_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "board_add", nickname, memo }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Board add failed");
+  }
+
+  const data = (await response.json()) as { ok?: boolean; message?: string };
+  return { ok: Boolean(data.ok), message: data.message } as const;
 }
