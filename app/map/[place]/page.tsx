@@ -255,7 +255,7 @@ export default function PlaceMapPage() {
         // 내 정보는 제외
         const others = Object.fromEntries(
           Object.entries(data).filter(([id]) => id !== playerId)
-        );
+        ) as { [id: string]: { x: number; y: number; updatedAt: number; nickname?: string } };
         setOtherPlayers(others);
       });
       return () => unsubscribe();
