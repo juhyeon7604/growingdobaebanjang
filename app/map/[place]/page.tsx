@@ -2,7 +2,19 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { initFirebase, getDb } from "../../../lib/firebase";
+import { ref, set, onValue, serverTimestamp, remove } from "firebase/database";
+// 고유 플레이어 ID 생성 (간단히 localStorage 사용)
+function getOrCreatePlayerId() {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem("player_id");
+  if (!id) {
+    id = Math.random().toString(36).slice(2) + Date.now();
+    localStorage.setItem("player_id", id);
+  }
+  return id;
+}
 import { DISTRICT_DIFFICULTY, getDifficultyColor } from "../raw/difficulty";
 import { getDistrictPosition, seoulDistricts } from "../raw/districts";
 import { AreaRow, WeaponState, fetchSheetData } from "../../../lib/sheets";
@@ -192,11 +204,62 @@ function parseWeaponState(raw: string): WeaponState {
 }
 
 export default function PlaceMapPage() {
+  // Firebase 초기화
+  useEffect(() => { initFirebase(); }, []);
+  const playerId = getOrCreatePlayerId();
+  const [otherPlayers, setOtherPlayers] = useState<{ [id: string]: { x: number; y: number; updatedAt: number; nickname?: string } }>({});
+  const [nickname, setNickname] = useState<string>("");
+    // 닉네임 localStorage에서 불러오거나 입력받기
+    useEffect(() => {
+      if (typeof window === "undefined") return;
+      let nick = localStorage.getItem("player_nickname") || "";
+      if (!nick) {
+        nick = prompt("닉네임을 입력하세요 (최대 10자)", "")?.slice(0, 10) || "플레이어";
+        localStorage.setItem("player_nickname", nick);
+      }
+      setNickname(nick);
+    }, []);
+  const playerPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const params = useParams();
   const place =
     typeof params.place === "string" ? decodeURIComponent(params.place) : "서울";
   const router = useRouter();
   const [playerPos, setPlayerPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    // 내 위치를 Firebase에 실시간 업데이트
+    useEffect(() => {
+      if (!playerId || !place) return;
+      const pos = playerPosRef.current;
+      const db = getDb();
+      const playerRef = ref(db, `players/${place}/${playerId}`);
+      set(playerRef, { x: pos.x, y: pos.y, updatedAt: Date.now(), nickname });
+      // 언마운트 시 내 정보 삭제(퇴장 처리)
+      return () => { remove(playerRef); };
+    }, [playerId, place]);
+
+    // 내 위치가 바뀔 때마다 Firebase에 반영
+    useEffect(() => {
+      if (!playerId || !place) return;
+      playerPosRef.current = playerPos;
+      const db = getDb();
+      const playerRef = ref(db, `players/${place}/${playerId}`);
+      set(playerRef, { x: playerPos.x, y: playerPos.y, updatedAt: Date.now(), nickname });
+    }, [playerPos, playerId, place]);
+
+    // 같은 맵의 다른 플레이어 위치 구독
+    useEffect(() => {
+      if (!place) return;
+      const db = getDb();
+      const playersRef = ref(db, `players/${place}`);
+      const unsubscribe = onValue(playersRef, (snapshot) => {
+        const data = snapshot.val() || {};
+        // 내 정보는 제외
+        const others = Object.fromEntries(
+          Object.entries(data).filter(([id]) => id !== playerId)
+        );
+        setOtherPlayers(others);
+      });
+      return () => unsubscribe();
+    }, [place, playerId]);
   const [lastHouse, setLastHouse] = useState<{ x: number; y: number } | null>(null);
   const [moving, setMoving] = useState<boolean>(false);
   const [direction, setDirection] = useState<"up" | "down" | "left" | "right">("down");
@@ -463,6 +526,43 @@ export default function PlaceMapPage() {
                         )}
                       </div>
                     </div>
+                    {/* 다른 플레이어들 렌더링 */}
+                    {Object.entries(otherPlayers).map(([id, pos]) => (
+                      <div
+                        key={id}
+                        className="absolute opacity-70"
+                        style={{
+                          left: pos.x * TILE + (TILE - PLAYER_W) / 2,
+                          top: pos.y * TILE + (TILE - PLAYER_H) / 2 + PLAYER_Y_OFFSET,
+                          transition: "left 100ms linear, top 100ms linear",
+                        }}
+                      >
+                        <div className="relative flex flex-col items-center" style={{ width: PLAYER_W, height: PLAYER_H }}>
+                          <span
+                            style={{
+                              position: "absolute",
+                              top: -24,
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              color: "#fff",
+                              background: "rgba(0,0,0,0.6)",
+                              padding: "2px 8px",
+                              borderRadius: 8,
+                              fontSize: 14,
+                              whiteSpace: "nowrap",
+                              pointerEvents: "none",
+                            }}
+                          >
+                            {pos.nickname || "플레이어"}
+                          </span>
+                          <img
+                            src="/dobaebanjang.png"
+                            alt="다른 캐릭터"
+                            style={{ width: PLAYER_W, height: PLAYER_H, filter: "grayscale(0.7)" }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 );
               })()}
